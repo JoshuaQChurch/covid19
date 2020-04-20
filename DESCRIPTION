@@ -1,13 +1,12 @@
 Package: covid19
-Title: What the Package Does (One Line, Title Case)
+Title: COVID-19
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Josh",
+           family = "Church",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+           email = "Joshua.Q.Church@erdc.dren.mil")
+Description: An all-in-one package to download, tidy, and showcase the COVID-19 data. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -21,6 +20,7 @@ Imports:
     DT,
     data.table,
     openintro,
-    usmaps,
-    magrittr
-RoxygenNote: 7.0.2
+    usmap,
+    magrittr,
+    shinycssloaders
+RoxygenNote: 7.1.0

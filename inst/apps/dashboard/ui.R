@@ -34,8 +34,8 @@ ui <- function() {
       skin = "dark",
       status = "primary",
       brandColor = "gray-light",
-      url = NULL, # Add the domain name later
-      src = file.path("images", "virus.png"),
+      url = "https://www.cdc.gov/coronavirus/2019-ncov/index.html",
+      src = file.path("images", "covid19.jpeg"),
       elevation = 4,
       opacity = 0.8,
       expand_on_hover = TRUE,
@@ -48,115 +48,516 @@ ui <- function() {
         compact = FALSE,
         child_indent = TRUE,
 
-        # Tab - Overview
-        bs4Dash::bs4SidebarMenuItem(
-          text = "Overview",
-          tabName = "tab-overview",
-          icon = "home",
-          startExpanded = FALSE
-        ),
-
         # Tab - Dashboard
         bs4Dash::bs4SidebarMenuItem(
-          text = "COVID-19 Cases",
-          tabName = "tab-cases",
-          icon = "procedures",
-          startExpanded = FALSE
+          text = "Dashboard",
+          tabName = "tab-dashboard",
+          icon = "tachometer-alt",
+          startExpanded = TRUE,
+
+          bs4Dash::bs4SidebarMenuSubItem(
+            text = "State & County",
+            tabName = "tab-dashboard-state-county",
+            icon = "map-marker-alt"
+          ),
+
+          bs4Dash::bs4SidebarMenuSubItem(
+            text = "State vs. State",
+            tabName = "tab-dashboard-state-state",
+            icon = "map"
+          )
+        ),
+
+        # Tab - Data
+        bs4Dash::bs4SidebarMenuItem(
+          text = "Data",
+          tabName = "tab-data",
+          icon = "table"
+        ),
+
+        # Tab - Data Sources
+        bs4Dash::bs4SidebarMenuItem(
+          text = "Data Sources",
+          tabName = "tab-data-sources",
+          icon = "database"
         )
       )
     ), # bs4Dash::bs4DashSidebar()
 
     # Body
     body = bs4Dash::bs4DashBody(
+
       bs4Dash::bs4TabItems(
 
-        # Overview Tab
+        # Tab - State & County
         bs4Dash::bs4TabItem(
-          tabName = "tab-overview",
+          tabName = "tab-dashboard-state-county",
 
-          shiny::tags$h1("Overview"),
-
-          # TODO:
-          # - Talk about the purpose
-          # - Acredit data sources
-
-        ),
-
-        # Tab - Recovered
-        bs4Dash::bs4TabItem(
-          tabName = "tab-cases",
-
-          shiny::tags$div(
-            shiny::tags$h1("COVID-19 - United States - CSE 8990")
+          shinycssloaders::withSpinner(
+            shiny::uiOutput("select_state_county")
           ),
 
           shiny::fluidRow(
-            shiny::column(
-              width = 8,
+            bs4Dash::bs4Sortable(
+              width = 6,
 
-              shiny::dateRangeInput(
-                inputId = "data_range_filter",
-                label = "Filter dates",
-                start  = "2001-01-01",
-                end    = "2010-12-31",
-                min    = "2001-01-01",
-                max    = "2012-12-21",
-                format = "mm/dd/yy",
-                separator = " to "
+              bs4Dash::bs4Card(
+                title = "Confirmed vs. Deaths - Per Day",
+                width = 12,
+                status = NULL,
+                gradientColor = NULL,
+                collapsible = TRUE,
+                closable = FALSE,
+                maximizable = TRUE,
+                enable_sidebar = TRUE,
+                sidebar_content = shiny::tags$div(
+                  shiny::radioButtons(
+                    inputId = "state_county_plot_1_scale",
+                    choices = c(
+                      "Linear" = "linear",
+                      "Logarithmic" = "log"
+                    ),
+                    selected = "linear",
+                    label = "Select Scale:"
+                  ),
+
+                  shiny::tags$br(),
+
+                  shiny::radioButtons(
+                    inputId = "state_county_plot_1_barmode",
+                    choices = c(
+                      "Stack" = "stack",
+                      "Group" = "group"
+                    ),
+                    selected = "stack",
+                    label = "Select Barmode:"
+                  )
+                ),
+                shiny::tags$div(
+                  style = "padding: 20px 0px 20px 10px;",
+                  shinycssloaders::withSpinner(
+                    plotly::plotlyOutput("state_county_plot_1")
+                  )
+                )
               )
             ),
 
-            shiny::column(
-              width = 4,
+            bs4Dash::bs4Sortable(
+              width = 6,
+              bs4Dash::bs4Card(
+                title = "Confirmed vs. Deaths - Total",
+                width = 12,
+                status = NULL,
+                gradientColor = NULL,
+                collapsible = TRUE,
+                closable = FALSE,
+                maximizable = TRUE,
+                enable_sidebar = TRUE,
+                sidebar_content = shiny::tags$div(
+                  shiny::radioButtons(
+                    inputId = "state_county_plot_2_scale",
+                    choices = c(
+                      "Linear" = "linear",
+                      "Logarithmic" = "log"
+                    ),
+                    selected = "linear",
+                    label = "Select Scale:"
+                  ),
 
-              shiny::tags$div(
+                  shiny::tags$br(),
 
-
-
-                bs4Dash::bs4Badge(
-                  "Quick Facts",
-                  status = "dark"
+                  shiny::radioButtons(
+                    inputId = "state_county_plot_2_barmode",
+                    choices = c(
+                      "Stack" = "stack",
+                      "Group" = "group"
+                    ),
+                    selected = "stack",
+                    label = "Select Barmode:"
+                  )
                 ),
-
-
-                shiny::tags$h1("Quick Facts"),
-                shiny::tags$hr(),
-
-                shiny::fluidRow(
-
-                  bs4Dash::infoBoxOutput(
-                    outputId = "total_cases",
-                    width = 4
-                  ),
-
-                  bs4Dash::infoBoxOutput(
-                    outputId = "total_recovered",
-                    width = 4
-                  ),
-
-                  bs4Dash::infoBoxOutput(
-                    outputId = "total_deaths",
-                    width = 4
+                shiny::tags$div(
+                  style = "padding: 20px 0px 20px 10px;",
+                  shinycssloaders::withSpinner(
+                    plotly::plotlyOutput("state_county_plot_2")
                   )
                 )
-              ),
+              )
+            )
+          ),
 
-              DT::dataTableOutput(outputId = "confirmed_table")
+          shiny::fluidRow(
+            bs4Dash::bs4Sortable(
+              width = 6,
+              bs4Dash::bs4Card(
+                title = "Education and Median Income",
+                width = 12,
+                status = NULL,
+                gradientColor = NULL,
+                collapsible = TRUE,
+                closable = FALSE,
+                maximizable = TRUE,
+                shiny::tags$div(
+                  style = "padding: 20px 0px 20px 10px;",
+                  shiny::fluidRow(
+                    shiny::column(
+                      width = 4,
+                      bs4Dash::infoBoxOutput("state_county_income", width = 12)
+                    ),
+                    shiny::column(
+                      width = 7,
+                      shinycssloaders::withSpinner(
+                        plotly::plotlyOutput("state_county_plot_3")
+                      )
+                    ),
+                    shiny::column(width = 1)
+                  )
+                )
+              )
+            ),
+
+            bs4Dash::bs4Sortable(
+              width = 6,
+              bs4Dash::bs4Card(
+                title = "Google Mobility Trends",
+                width = 12,
+                status = NULL,
+                gradientColor = NULL,
+                collapsible = TRUE,
+                closable = FALSE,
+                maximizable = TRUE,
+                shiny::tags$div(
+                  style = "padding: 20px 0px 20px 10px;",
+                  shinycssloaders::withSpinner(
+                    plotly::plotlyOutput("state_county_plot_4")
+                  )
+                )
+              )
             )
           )
+        ), # bs4TabItem()
 
-        )
+
+        # --------------------------------------------------
+
+
+        # Tab - State & State Comparision
+        bs4Dash::bs4TabItem(
+          tabName = "tab-dashboard-state-state",
+
+          shinycssloaders::withSpinner(
+            shiny::uiOutput("select_state_state")
+          ),
+
+          shiny::fluidRow(
+            bs4Dash::bs4Sortable(
+              width = 6,
+
+              bs4Dash::bs4Card(
+                title = "Confirmed vs. Deaths",
+                width = 12,
+                status = NULL,
+                gradientColor = NULL,
+                collapsible = TRUE,
+                closable = FALSE,
+                maximizable = TRUE,
+                enable_sidebar = TRUE,
+                sidebar_content = shiny::tags$div(
+
+                  shiny::radioButtons(
+                    inputId = "state_state_plot_1_type",
+                    choices = c(
+                      "Total" = "total",
+                      "Per Day" = "per_day"
+                    ),
+                    selected = "total",
+                    label = "Select Aggregration:"
+                  ),
+
+                  shiny::radioButtons(
+                    inputId = "state_state_plot_1_scale",
+                    choices = c(
+                      "Linear" = "linear",
+                      "Logarithmic" = "log"
+                    ),
+                    selected = "linear",
+                    label = "Select Scale:"
+                  ),
+
+                  shiny::tags$br(),
+
+                  shiny::radioButtons(
+                    inputId = "state_state_plot_1_barmode",
+                    choices = c(
+                      "Stack" = "stack",
+                      "Group" = "group"
+                    ),
+                    selected = "stack",
+                    label = "Select Barmode:"
+                  )
+                ),
+                shiny::tags$div(
+                  style = "padding: 20px 0px 20px 10px;",
+                  shinycssloaders::withSpinner(
+                    plotly::plotlyOutput("state_state_plot_1")
+                  )
+                )
+              )
+            ),
+
+            bs4Dash::bs4Sortable(
+              width = 6,
+
+              bs4Dash::bs4Card(
+                title = "Confirmed vs. Deaths",
+                width = 12,
+                status = NULL,
+                gradientColor = NULL,
+                collapsible = TRUE,
+                closable = FALSE,
+                maximizable = TRUE,
+                enable_sidebar = TRUE,
+                sidebar_content = shiny::tags$div(
+
+                  shiny::radioButtons(
+                    inputId = "state_state_plot_2_type",
+                    choices = c(
+                      "Total" = "total",
+                      "Per Day" = "per_day"
+                    ),
+                    selected = "total",
+                    label = "Select Aggregration:"
+                  ),
+
+                  shiny::radioButtons(
+                    inputId = "state_state_plot_2_scale",
+                    choices = c(
+                      "Linear" = "linear",
+                      "Logarithmic" = "log"
+                    ),
+                    selected = "linear",
+                    label = "Select Scale:"
+                  ),
+
+                  shiny::tags$br(),
+
+                  shiny::radioButtons(
+                    inputId = "state_state_plot_2_barmode",
+                    choices = c(
+                      "Stack" = "stack",
+                      "Group" = "group"
+                    ),
+                    selected = "stack",
+                    label = "Select Barmode:"
+                  )
+                ),
+                shiny::tags$div(
+                  style = "padding: 20px 0px 20px 10px;",
+                  shinycssloaders::withSpinner(
+                    plotly::plotlyOutput("state_state_plot_2")
+                  )
+                )
+              )
+            )
+          ), # fluidRow()
+
+          shiny::fluidRow(
+            bs4Dash::bs4Sortable(
+              width = 6,
+              bs4Dash::bs4Card(
+                title = "Google Mobility Trends",
+                width = 12,
+                status = NULL,
+                gradientColor = NULL,
+                collapsible = TRUE,
+                closable = FALSE,
+                maximizable = TRUE,
+                shiny::tags$div(
+                  style = "padding: 20px 0px 20px 10px;",
+                  shinycssloaders::withSpinner(
+                    plotly::plotlyOutput("state_state_plot_3")
+                  )
+                )
+              )
+            ),
+
+            bs4Dash::bs4Sortable(
+              width = 6,
+              bs4Dash::bs4Card(
+                title = "Google Mobility Trends",
+                width = 12,
+                status = NULL,
+                gradientColor = NULL,
+                collapsible = TRUE,
+                closable = FALSE,
+                maximizable = TRUE,
+                shiny::tags$div(
+                  style = "padding: 20px 0px 20px 10px;",
+                  shinycssloaders::withSpinner(
+                    plotly::plotlyOutput("state_state_plot_4")
+                  )
+                )
+              )
+            )
+          ), # fluidRow()
+
+          shiny::fluidRow(
+            bs4Dash::bs4Sortable(
+              width = 6,
+              bs4Dash::bs4Card(
+                title = "Education and Median Income",
+                width = 12,
+                status = NULL,
+                gradientColor = NULL,
+                collapsible = TRUE,
+                closable = FALSE,
+                maximizable = TRUE,
+                shiny::tags$div(
+                  style = "padding: 20px 0px 20px 10px;",
+                  shiny::fluidRow(
+                    shiny::column(
+                      width = 4,
+                      bs4Dash::infoBoxOutput("state_state_income_1", width = 12)
+                    ),
+                    shiny::column(
+                      width = 7,
+                      shinycssloaders::withSpinner(
+                        plotly::plotlyOutput("state_state_plot_5")
+                      )
+                    ),
+                    shiny::column(width = 1)
+                  )
+                )
+              )
+            ),
+
+            bs4Dash::bs4Sortable(
+              width = 6,
+              bs4Dash::bs4Card(
+                title = "Education and Median Income",
+                width = 12,
+                status = NULL,
+                gradientColor = NULL,
+                collapsible = TRUE,
+                closable = FALSE,
+                maximizable = TRUE,
+                shiny::tags$div(
+                  style = "padding: 20px 0px 20px 10px;",
+                  shiny::fluidRow(
+                    shiny::column(
+                      width = 4,
+                      bs4Dash::infoBoxOutput("state_state_income_2", width = 12)
+                    ),
+                    shiny::column(
+                      width = 7,
+                      shinycssloaders::withSpinner(
+                        plotly::plotlyOutput("state_state_plot_6")
+                      )
+                    ),
+                    shiny::column(width = 1)
+                  )
+                )
+              )
+            )
+          ) # fluidRow()
+        ), # bs4TabItem()
+
+        # --------------------------------------------------
+
+        # Tab - Data
+        bs4Dash::bs4TabItem(
+          tabName = "tab-data",
+
+          bs4Dash::bs4TabSetPanel(
+
+            id = NULL,
+            side = "left",
+            status = NULL,
+            tabStatus = NULL,
+            vertical = FALSE,
+            type = NULL,
+
+            bs4Dash::bs4TabPanel(
+              tabName = "JHU",
+
+              shiny::tags$div(
+                style = "text-align: center; padding: 10px;",
+                shiny::tags$h1(
+                  "Johns Hopkins University - COVID-19 Data",
+                  style = "padding-bottom: 25px;"
+                ),
+                DT::dataTableOutput("jhu_data")
+              ),
+              active = TRUE
+            ),
+
+            bs4Dash::bs4TabPanel(
+              tabName = "Mobility Reports",
+
+              shiny::tags$div(
+                style = "text-align: center; padding: 10px;",
+                shiny::tags$h1(
+                  "Google Mobility Reports",
+                  style = "padding-bottom: 25px;"
+                ),
+                DT::dataTableOutput("mobility_data")
+              ),
+              active = FALSE
+            ),
+
+            bs4Dash::bs4TabPanel(
+              tabName = "Education/Income",
+              shiny::tags$div(
+                style = "text-align: center; padding: 10px;",
+                shiny::tags$h1(
+                  "Education and Income Levels - 2014-2018",
+                  style = "padding-bottom: 25px;"
+                ),
+                DT::dataTableOutput("edu_income_data")
+              ),
+              active = FALSE
+            )
+          )
+        ), # bs4TabItem()
+
+        # Overview Tab
+        bs4Dash::bs4TabItem(
+          tabName = "tab-data-sources",
+
+          bs4Dash::bs4ValueBox(
+            value = shiny::tags$h3("Johns Hopkins University"),
+            subtitle = "Github Repo with most up-to-date COVID-19 data",
+            icon = "github",
+            status = "primary",
+            width = 12,
+            href = "https://github.com/CSSEGISandData/COVID-19"
+          ),
+
+          bs4Dash::bs4ValueBox(
+            value = shiny::tags$h3("Google Mobility Reports"),
+            subtitle = "Economic Research Service",
+            icon = "google",
+            status = "info",
+            width = 12,
+            href = "https://www.google.com/covid19/mobility/"
+          ),
+
+          bs4Dash::bs4ValueBox(
+            value = shiny::tags$h3("US Department of Agriculture"),
+            subtitle = "Economic Research Service",
+            icon = "external-link-alt",
+            status = "success",
+            width = 12,
+            href = "https://www.ers.usda.gov/"
+          )
+        ) # bs4TabItem()
       ) # bs4TabItems()
     ),
 
     # Controlbar
     controlbar = bs4Dash::bs4DashControlbar(
       title = "Download Current Data",
-
-      shiny::tags$div("Content")
-
-      # TODO: Complete this section
-
+      shiny::tags$h3("Check back later!")
     ),
 
     # Footer

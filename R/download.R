@@ -1,6 +1,4 @@
-
-
-#' Download the United States Google Mobility Report data
+#' Download and tidy the United States Google Mobility Report data
 #'
 #' @return A data table containing the data.
 #' @export
@@ -180,7 +178,7 @@ download_jhu_covid_19 <- function() {
 
 
 
-#' Download the US Department of Agriculture data for Education and Unemployment/Income
+#' Download and tidy the US Department of Agriculture data for Education and Unemployment/Income
 #'
 #' @param path File download path
 #' @export
@@ -212,19 +210,23 @@ download_usda <- function() {
     y = unemployment_dt,
     by = "fips"
   ) %>%
-    dplyr::rename(
-      state = State,
-      county = `Area name`,
-      less_than_highschool_2014_2018 = `Percent of adults with less than a high school diploma, 2014-18`,
-      high_school_2014_2018 = `Percent of adults with a high school diploma only, 2014-18`,
-      some_college_or_associates_2014_2018 = `Percent of adults completing some college or associate's degree, 2014-18`,
-      bachelors_or_higher_2014_2018 = `Percent of adults with a bachelor's degree or higher, 2014-18`
-    ) %>%
 
-    dplyr::mutate(
-      state = openintro::abbr2state(state),
-      county = gsub(" County", "", county, ignore.case = TRUE)
-    )
+  dplyr::rename(
+    state = State,
+    county = `Area name`,
+    less_than_highschool_2014_2018 = `Percent of adults with less than a high school diploma, 2014-18`,
+    high_school_2014_2018 = `Percent of adults with a high school diploma only, 2014-18`,
+    some_college_or_associates_2014_2018 = `Percent of adults completing some college or associate's degree, 2014-18`,
+    bachelors_or_higher_2014_2018 = `Percent of adults with a bachelor's degree or higher, 2014-18`
+  ) %>%
+
+  dplyr::mutate(
+    state = openintro::abbr2state(state),
+    county = gsub(" County", "", county, ignore.case = TRUE)
+  )
+
+  # Remove duplicate county information
+  dt[match(unique(dt$state), dt$state), ]$county <- ''
 
   return(dt)
 }
@@ -261,12 +263,3 @@ download_all_data <- function(path) {
   )
 
 }
-
-
-
-download_all_data("./inst/extdata/")
-
-
-
-
-
