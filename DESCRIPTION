@@ -22,5 +22,6 @@ Imports:
     openintro,
     usmap,
     magrittr,
-    shinycssloaders
+    shinycssloaders,
+    dplyr
 RoxygenNote: 7.1.0
