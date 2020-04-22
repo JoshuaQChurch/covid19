@@ -34,7 +34,7 @@ ui <- function() {
       skin = "dark",
       status = "primary",
       brandColor = "gray-light",
-      url = "https://www.cdc.gov/coronavirus/2019-ncov/index.html",
+      url = "https://github.com/JoshuaQChurch/covid19",
       src = file.path("images", "covid19.jpeg"),
       elevation = 4,
       opacity = 0.8,
