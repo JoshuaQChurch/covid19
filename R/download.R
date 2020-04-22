@@ -18,7 +18,10 @@ download_google_mr_us <- function() {
       workplaces = workplaces_percent_change_from_baseline,
       residential = residential_percent_change_from_baseline
     ) %>%
-    mutate(county = gsub(" County", "", county, ignore.case = TRUE))
+    dplyr::mutate(county = gsub(" County", "", county, ignore.case = TRUE))
+
+  # Remove "Parish" from "Louisiana" counties
+  dt[dt$state == "Louisiana", ]$county <- gsub(" Parish", "", dt[dt$state == "Louisiana", ]$county)
 
   return(dt)
 }
@@ -112,7 +115,16 @@ download_jhu_covid_19 <- function() {
   dt <- dplyr::right_join(
     x = dt_confirmed_us,
     y = dt_deaths_us,
-    by = c("UID", "fips", "county", "state", "country", "latitude", "longtitude", "date")
+    by = c(
+      "UID",
+      "fips",
+      "county",
+      "state",
+      "country",
+      "latitude",
+      "longtitude",
+      "date"
+    )
   )
 
   dt$UID <- NULL
@@ -178,7 +190,7 @@ download_jhu_covid_19 <- function() {
 
 
 
-#' Download and tidy the US Department of Agriculture data for Education and Unemployment/Income
+#' Download and tidy the US Department of Agriculture data for Education, Unemployment/Income, and Population
 #'
 #' @param path File download path
 #' @export
@@ -204,28 +216,60 @@ download_usda <- function() {
       median_household_income_2018 = Median_Household_Income_2018
     )
 
+  # Download and tidy the "Populuation" data
+  population_url <- "https://www.ers.usda.gov/webdocs/DataFiles/48747/PopulationEstimates.csv?v=3011.3"
+  population_dt <- data.table::fread(population_url)
+  population_dt <- population_dt %>%
+    dplyr::select(FIPS, POP_ESTIMATE_2018) %>%
+    dplyr::rename(
+      fips = FIPS,
+      population_est_2018 = POP_ESTIMATE_2018
+    ) %>%
+    dplyr::mutate(
+      population_est_2018 = as.numeric(gsub("[\\$,]", "", population_est_2018))
+    )
+
   # Merge into one dataset
   dt <- dplyr::right_join(
     x = education_dt,
     y = unemployment_dt,
+    by = "fips"
+  )
+
+  dt <- dplyr::right_join(
+    x = dt,
+    y = population_dt,
     by = "fips"
   ) %>%
 
   dplyr::rename(
     state = State,
     county = `Area name`,
-    less_than_highschool_2014_2018 = `Percent of adults with less than a high school diploma, 2014-18`,
-    high_school_2014_2018 = `Percent of adults with a high school diploma only, 2014-18`,
-    some_college_or_associates_2014_2018 = `Percent of adults completing some college or associate's degree, 2014-18`,
-    bachelors_or_higher_2014_2018 = `Percent of adults with a bachelor's degree or higher, 2014-18`
+    less_than_highschool_2014_2018 = `Less than a high school diploma, 2014-18`,
+    high_school_2014_2018 = `High school diploma only, 2014-18`,
+    some_college_or_associates_2014_2018 = `Some college or associate's degree, 2014-18`,
+    bachelors_or_higher_2014_2018 = `Bachelor's degree or higher, 2014-18`,
+    perc_less_than_highschool_2014_2018 = `Percent of adults with less than a high school diploma, 2014-18`,
+    perc_high_school_2014_2018 = `Percent of adults with a high school diploma only, 2014-18`,
+    perc_some_college_or_associates_2014_2018 = `Percent of adults completing some college or associate's degree, 2014-18`,
+    perc_bachelors_or_higher_2014_2018 = `Percent of adults with a bachelor's degree or higher, 2014-18`
   ) %>%
 
   dplyr::mutate(
     state = openintro::abbr2state(state),
-    county = gsub(" County", "", county, ignore.case = TRUE)
+    county = gsub(" County", "", county, ignore.case = TRUE),
+    less_than_highschool_2014_2018 = as.numeric(gsub("[\\$,]", "", less_than_highschool_2014_2018)),
+    high_school_2014_2018 = as.numeric(gsub("[\\$,]", "", high_school_2014_2018)),
+    some_college_or_associates_2014_2018 = as.numeric(gsub("[\\$,]", "", some_college_or_associates_2014_2018)),
+    bachelors_or_higher_2014_2018 = as.numeric(gsub("[\\$,]", "", bachelors_or_higher_2014_2018))
   )
 
-  # Remove duplicate county information
+  dt <- dt[complete.cases(dt), ]
+
+  # Remove "Parish" from "Louisiana" counties
+  dt[dt$state == "Louisiana", ]$county <- gsub(" Parish", "", dt[dt$state == "Louisiana", ]$county)
+
+  # Remove duplicate state in county section.
   dt[match(unique(dt$state), dt$state), ]$county <- ''
 
   return(dt)
@@ -259,7 +303,7 @@ download_all_data <- function(path) {
   # Download the USDA data
   data.table::fwrite(
     x = download_usda(),
-    file = file.path(path, "education_income.csv")
+    file = file.path(path, "usda_2014_2018.csv")
   )
 
 }

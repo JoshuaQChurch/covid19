@@ -2,7 +2,7 @@
 % Please edit documentation in R/download.R
 \name{download_usda}
 \alias{download_usda}
-\title{Download and tidy the US Department of Agriculture data for Education and Unemployment/Income}
+\title{Download and tidy the US Department of Agriculture data for Education, Unemployment/Income, and Population}
 \usage{
 download_usda()
 }
@@ -10,5 +10,5 @@ download_usda()
 \item{path}{File download path}
 }
 \description{
-Download and tidy the US Department of Agriculture data for Education and Unemployment/Income
+Download and tidy the US Department of Agriculture data for Education, Unemployment/Income, and Population
 }

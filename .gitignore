@@ -1,6 +1,9 @@
 # macOS
 .DS_Store
 
+# rsconnect
+rsconnect/
+
 # History files
 .Rhistory
 .Rapp.history
