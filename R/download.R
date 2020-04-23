@@ -280,10 +280,14 @@ download_usda <- function() {
 #'
 #' @param path file download path
 #' @export
-download_all_data <- function(path) {
+download_all_data <- function(path = NULL) {
 
   if (!curl::has_internet()) {
     stop("A stable internet connection is required to download data.")
+  }
+
+  if (is.null(path)) {
+    path <- system.file("apps", "covid-19", "data", package = "covid19")
   }
 
   path <- normalizePath(path)

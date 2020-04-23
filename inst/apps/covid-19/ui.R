@@ -197,22 +197,32 @@ ui <- function() {
                 collapsible = TRUE,
                 closable = FALSE,
                 maximizable = TRUE,
+                enable_sidebar = TRUE,
+                sidebar_content = shiny::tags$div(
+                  shiny::checkboxInput(
+                    inputId = "state_county_plot_3_showlegend",
+                    label = "Show Legend",
+                    value = TRUE,
+                    width = "100%"
+                  )
+                ),
                 shiny::tags$div(
                   style = "padding: 20px 0px 20px 10px;",
                   shiny::fluidRow(
                     shiny::column(
-                      width = 4,
-
-                      bs4Dash::infoBoxOutput("state_county_population", width = 12),
-                      bs4Dash::infoBoxOutput("state_county_income", width = 12)
+                      width = 6,
+                      bs4Dash::infoBoxOutput("state_county_population", width = 12)
                     ),
                     shiny::column(
-                      width = 7,
-                      shinycssloaders::withSpinner(
-                        plotly::plotlyOutput("state_county_plot_3")
-                      )
-                    ),
-                    shiny::column(width = 1)
+                      width = 6,
+                      bs4Dash::infoBoxOutput("state_county_income", width = 12)
+                    )
+                  ),
+                  shiny::fluidRow(
+                    style = "padding-top: 15px;",
+                    shinycssloaders::withSpinner(
+                      plotly::plotlyOutput("state_county_plot_3")
+                    )
                   )
                 )
               )
@@ -485,21 +495,32 @@ ui <- function() {
                 collapsible = TRUE,
                 closable = FALSE,
                 maximizable = TRUE,
+                enable_sidebar = TRUE,
+                sidebar_content = shiny::tags$div(
+                  shiny::checkboxInput(
+                    inputId = "state_state_plot_5_showlegend",
+                    label = "Show Legend",
+                    value = TRUE,
+                    width = "100%"
+                  )
+                ),
                 shiny::tags$div(
                   style = "padding: 20px 0px 20px 10px;",
                   shiny::fluidRow(
                     shiny::column(
-                      width = 4,
-                      bs4Dash::infoBoxOutput("state_state_population_1", width = 12),
-                      bs4Dash::infoBoxOutput("state_state_income_1", width = 12)
+                      width = 6,
+                      bs4Dash::infoBoxOutput("state_state_population_1", width = 12)
                     ),
                     shiny::column(
-                      width = 7,
-                      shinycssloaders::withSpinner(
-                        plotly::plotlyOutput("state_state_plot_5")
-                      )
-                    ),
-                    shiny::column(width = 1)
+                      width = 6,
+                      bs4Dash::infoBoxOutput("state_state_income_1", width = 12)
+                    )
+                  ),
+                  shiny::fluidRow(
+                    style = "padding-top: 15px;",
+                    shinycssloaders::withSpinner(
+                      plotly::plotlyOutput("state_state_plot_5")
+                    )
                   )
                 )
               )
@@ -515,21 +536,32 @@ ui <- function() {
                 collapsible = TRUE,
                 closable = FALSE,
                 maximizable = TRUE,
+                enable_sidebar = TRUE,
+                sidebar_content = shiny::tags$div(
+                  shiny::checkboxInput(
+                    inputId = "state_state_plot_6_showlegend",
+                    label = "Show Legend",
+                    value = TRUE,
+                    width = "100%"
+                  )
+                ),
                 shiny::tags$div(
                   style = "padding: 20px 0px 20px 10px;",
                   shiny::fluidRow(
                     shiny::column(
-                      width = 4,
-                      bs4Dash::infoBoxOutput("state_state_population_2", width = 12),
-                      bs4Dash::infoBoxOutput("state_state_income_2", width = 12)
+                      width = 6,
+                      bs4Dash::infoBoxOutput("state_state_population_2", width = 12)
                     ),
                     shiny::column(
-                      width = 7,
-                      shinycssloaders::withSpinner(
-                        plotly::plotlyOutput("state_state_plot_6")
-                      )
-                    ),
-                    shiny::column(width = 1)
+                      width = 6,
+                      bs4Dash::infoBoxOutput("state_state_income_2", width = 12)
+                    )
+                  ),
+                  shiny::fluidRow(
+                    style = "padding-top: 15px;",
+                    shinycssloaders::withSpinner(
+                      plotly::plotlyOutput("state_state_plot_6")
+                    )
                   )
                 )
               )
@@ -561,7 +593,9 @@ ui <- function() {
                   "Johns Hopkins University - COVID-19 Data",
                   style = "padding-bottom: 25px;"
                 ),
-                DT::dataTableOutput("jhu_data")
+                shinycssloaders::withSpinner(
+                  DT::dataTableOutput("jhu_data")
+                )
               ),
               active = TRUE
             ),
@@ -575,7 +609,9 @@ ui <- function() {
                   "Google Mobility Reports",
                   style = "padding-bottom: 25px;"
                 ),
-                DT::dataTableOutput("mobility_data")
+                shinycssloaders::withSpinner(
+                  DT::dataTableOutput("mobility_data")
+                )
               ),
               active = FALSE
             ),
@@ -588,7 +624,9 @@ ui <- function() {
                   "Education and Income Levels - 2014-2018",
                   style = "padding-bottom: 25px;"
                 ),
-                DT::dataTableOutput("usda_data")
+                shinycssloaders::withSpinner(
+                  DT::dataTableOutput("usda_data")
+                )
               ),
               active = FALSE
             )
@@ -623,7 +661,7 @@ ui <- function() {
             icon = "external-link-alt",
             status = "success",
             width = 12,
-            href = "https://www.ers.usda.gov/"
+            href = "https://www.ers.usda.gov/data-products/county-level-data-sets/"
           )
         ) # bs4TabItem()
       ) # bs4TabItems()

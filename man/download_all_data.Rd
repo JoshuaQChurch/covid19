@@ -4,7 +4,7 @@
 \alias{download_all_data}
 \title{Download all data for COVID-19 dashboard}
 \usage{
-download_all_data(path)
+download_all_data(path = NULL)
 }
 \arguments{
 \item{path}{file download path}

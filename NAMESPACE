@@ -2,6 +2,7 @@
 
 export("%>%")
 export(dashboard)
+export(deploy)
 export(download_all_data)
 export(download_google_mr_us)
 export(download_jhu_covid_19)

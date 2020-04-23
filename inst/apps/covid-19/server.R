@@ -179,7 +179,10 @@ server <- function(input, output, session) {
     })
 
     output$state_county_plot_3 <- plotly::renderPlotly({
-      create_pie_chart(usda_data, .state, .county)
+      create_pie_chart(
+        usda_data, .state, .county,
+        showlegend = input$state_county_plot_3_showlegend
+      )
     })
 
     output$state_county_plot_4 <- plotly::renderPlotly({
@@ -267,11 +270,17 @@ server <- function(input, output, session) {
     })
 
     output$state_state_plot_5 <- plotly::renderPlotly({
-      create_pie_chart(usda_data, .state = input$select_state_1, .county = '')
+      create_pie_chart(
+        usda_data, .state = input$select_state_1, .county = '',
+        showlegend = input$state_state_plot_5_showlegend
+      )
     })
 
     output$state_state_plot_6 <- plotly::renderPlotly({
-      create_pie_chart(usda_data, .state = input$select_state_2, .county = '')
+      create_pie_chart(
+        usda_data, .state = input$select_state_2, .county = '',
+        showlegend = input$state_state_plot_6_showlegend
+      )
     })
 
     output$state_state_plot_7 <- plotly::renderPlotly({

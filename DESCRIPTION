@@ -24,4 +24,6 @@ Imports:
     magrittr,
     shinycssloaders,
     dplyr
+Suggests:
+    rsconnect
 RoxygenNote: 7.1.0

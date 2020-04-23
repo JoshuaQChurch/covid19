@@ -165,9 +165,10 @@ create_mobility_trends <- function(data, .state, .county = '',
 #' @param .county County to filter data
 #' @return Pie chart
 #' @export
-create_pie_chart <- function(data, .state, .county = '') {
+create_pie_chart <- function(data, .state, .county = '',
+                             showlegend = TRUE) {
 
-  title <- "Education<br>"
+  title <- "Education - "
 
   if (.county == '') {
     title <- paste0(title, .state)
@@ -220,7 +221,7 @@ create_pie_chart <- function(data, .state, .county = '') {
       zeroline = FALSE,
       showticklabels = FALSE
     ),
-    showlegend = FALSE
+    showlegend = showlegend
   )
 
   return(p)
